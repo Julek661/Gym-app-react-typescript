@@ -2,6 +2,7 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import ExerciseTracker from "./ExerciseTracker";
 import React from "react";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("@apollo/client", () => {
   const useQuery = jest.fn();
@@ -58,6 +59,28 @@ describe("ExerciseTracker", () => {
     expect(createExerciseButton).toBeInTheDocument();
     createExerciseButton.click();
     expect(createExercise).toHaveBeenCalled();
+  });
+
+  it("should call with the right text mutation when exercise is created", () => {
+    const { useQuery, useMutation } = require("@apollo/client");
+    const createExercise = jest.fn();
+    useQuery.mockReturnValue({
+      loading: false,
+      data: {
+        exercises: [
+          { id: "1", name: "Exercise 1" },
+          { id: "2", name: "Exercise 2" },
+        ],
+      },
+    });
+    useMutation.mockReturnValue([createExercise, {}]);
+    render(<ExerciseTracker />);
+    userEvent.type(screen.getByPlaceholderText("Exercise Name"), "Exercise 3");
+    const createExerciseButton = screen.getByText("Create Exercise");
+    createExerciseButton.click();
+    expect(createExercise).toHaveBeenCalledWith({
+      variables: { name: "Exercise 3", muscletrained: "s" },
+    });
   });
 
   it("should call mutation when exercise is deleted", () => {

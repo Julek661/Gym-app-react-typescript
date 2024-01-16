@@ -70,7 +70,9 @@ function ExerciseTracker() {
         <label>
           Name:
           <input
-          
+            placeholder="Exercise Name"
+            className="exerciseInput"
+            aria-label="exerciseInput"
             type="text"
             value={newExerciseName}
             onChange={(e) => {
@@ -81,6 +83,9 @@ function ExerciseTracker() {
         <label>
           Muscle Trained:
           <input
+            placeholder="Muscle Trained"
+            className="muscleInput"
+            aria-label="muscleInput"
             type="text"
             value={newMuscleTrained}
             onChange={(e) => setNewMuscleTrained(e.target.value)}
