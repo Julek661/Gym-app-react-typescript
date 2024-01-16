@@ -15,7 +15,7 @@ function ExerciseTracker() {
   const handleCreateExercise = async (e: any) => {
     e.preventDefault();
     try {
-      const { data } = await createExercise({
+      const { data = [] } = await createExercise({
         variables: {
           name: newExerciseName,
           muscletrained: newMuscleTrained,
@@ -63,7 +63,7 @@ function ExerciseTracker() {
 
   return (
     <div>
-      <h1>Exercise App</h1>
+      <h1>Exercise Library</h1>
 
       <div>
         <h2>Create a New Exercise</h2>
