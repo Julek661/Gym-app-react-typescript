@@ -1,14 +1,19 @@
 import React from "react";
-import { Link} from "@tanstack/react-router";
+import { Route, Routes } from "react-router-dom";
+import ExerciseTracker from "./ExerciseTracker";
+import HomePage from "./HomePage";
+import Navbar from "./Navbar";
+import WorkoutCreator from "./Workout Creator/WorkoutCreator";
 
 const App = () => {
   return (
     <>
-      <h1>Welcome to Gym App</h1>
-      <h2>Choose a page to navigate to:</h2>
-      <button>
-        <Link to={"/exercise"}>Exercise tracker</Link>
-      </button>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/exercise" element={<ExerciseTracker />} />
+        <Route path="/workout" element={<WorkoutCreator />} />
+      </Routes>
     </>
   );
 };
