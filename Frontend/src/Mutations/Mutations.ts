@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
 
-
 export const CREATE_EXERCISE = gql`
   mutation CreateExercise($name: String!, $muscletrained: String!) {
     createExercise(name: $name, muscletrained: $muscletrained) {
@@ -17,3 +16,17 @@ export const DELETE_EXERCISE = gql`
   }
 `;
 
+export const CREATE_COMPONENT = gql`
+  mutation CreateComponent($repetitions: Int!, $sets: Int!, $exercise_id: ID!) {
+    createComponent(
+      repetitions: $repetitions
+      sets: $sets
+      exercise_id: $exercise_id
+    ) {
+      id
+      repetitions
+      sets
+      exercise_id
+    }
+  }
+`;

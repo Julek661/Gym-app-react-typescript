@@ -28,6 +28,21 @@ const resolvers = {
     },
   },
   Mutation: {
+    createComponent: async (
+      _: any,
+      { repetitions, sets, exercise_id }: any
+    ) => {
+      try {
+        const result = await pool.query(
+          "INSERT INTO workout_component (repetitions, sets, exercise_id) values ($1, $2, $3) RETURNING *",
+          [repetitions, sets, exercise_id]
+        );
+        return result.rows[0];
+      } catch (error) {
+        console.error("Error creating component:", error);
+        throw new Error("Unable to create component");
+      }
+    },
     createExercise: async (_: any, { name, muscletrained }: any) => {
       try {
         const result = await pool.query(
