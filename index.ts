@@ -26,6 +26,17 @@ const resolvers = {
         throw new Error("Unable to fetch exercise");
       }
     },
+    exerciseComponents: async () => {
+      try {
+        const result = await pool.query(
+          "SELECT workout_component.*, exercise.name FROM workout_component INNER JOIN exercise ON exercise.id = workout_component.exercise_id"
+        );
+        return result.rows;
+      } catch (error) {
+        console.error("Error fetching exercise components:", error);
+        throw new Error("Unable to fetch exercise components");
+      }
+    },
   },
   Mutation: {
     createComponent: async (

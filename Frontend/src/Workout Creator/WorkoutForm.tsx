@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { FieldValues, set, useForm } from "react-hook-form";
 import { GET_EXERCISES } from "../Queries/Queries";
 import { useMutation, useQuery } from "@apollo/client";
 import { CREATE_COMPONENT } from "../Mutations/Mutations";
@@ -14,32 +14,10 @@ interface ExerciseData {
 
 export default function WorkoutForm() {
   const { data = { exercises: [] } } = useQuery<ExerciseData>(GET_EXERCISES);
-  const [workout, setWorkout] = useState<FieldValues[]>([]);
+  const [workout, setWorkout] = useState<FieldValues>({});
   const { exercises } = data;
   const { register, handleSubmit } = useForm();
-
   const [createComponent] = useMutation(CREATE_COMPONENT);
-
-  const handleCreateComponent = async (e: any) => {
-    e.preventDefault();
-    try {
-      const { data = [] } = await createComponent({
-        variables: {
-          workout,
-        },
-      });
-
-      console.log("Mutation response:", data);
-
-      if (data && data.createComponent) {
-        console.log("Created component:", data.createComponent);
-      } else {
-        console.error("Failed to create component. No data returned.");
-      }
-    } catch (error: any) {
-      console.error("Error creating component:", error.message);
-    }
-  };
 
   const handleSubmitExercise = ({
     Sets,
@@ -52,10 +30,36 @@ export default function WorkoutForm() {
     const sets = Number(Sets);
     const repetitions = Number(Repetitions);
 
-    setWorkout([
-      ...workout,
-      { sets, repetitions, exerciseID: exerciseSelected?.id },
-    ]);
+    const newWorkout = { sets, repetitions, exerciseID: exerciseSelected?.id };
+    setWorkout(newWorkout);
+
+    handleCreateComponent(newWorkout);
+  };
+
+  const handleCreateComponent = async (workout: FieldValues) => {
+    const { sets, repetitions, exerciseID } = workout;
+    try {
+      const { data = [] } = await createComponent({
+        variables: {
+          repetitions: repetitions,
+          exercise_id: exerciseID,
+          sets: sets,
+        },
+      });
+
+      console.log("Mutation response:", data);
+
+      if (data && data.createComponent) {
+        console.log("Created component:", data.createComponent);
+        setWorkout({});
+      } else {
+        console.error("Failed to create component. No data returned.");
+        setWorkout({});
+      }
+    } catch (error: any) {
+      console.error("Error creating component:", error.message);
+      setWorkout({});
+    }
   };
 
   return (

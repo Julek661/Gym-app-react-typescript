@@ -7,13 +7,21 @@ type exercise {
   }
 
   type component {
-  id: ID!
+  component_id: ID!
   repetitions: Int!
   sets: Int!
   exercise_id: ID!
  }
 
+ type WorkoutComponent {
+  component_id: ID!
+  repetitions: Int!
+  sets: Int!
+  name: String!
+}
+
   type Query {
+    exerciseComponents: [WorkoutComponent!]!
     exercises: [exercise!]!
     exercise(id: ID!): exercise
   }

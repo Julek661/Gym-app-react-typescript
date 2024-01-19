@@ -9,3 +9,14 @@ export const GET_EXERCISES = gql`
     }
   }
 `;
+
+export const GET_WORKOUT_COMPONENTS = gql`
+  query {
+    exerciseComponents {
+      component_id
+      repetitions
+      sets
+      name
+    }
+  }
+`;

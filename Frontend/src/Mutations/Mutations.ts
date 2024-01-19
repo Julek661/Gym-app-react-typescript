@@ -23,7 +23,7 @@ export const CREATE_COMPONENT = gql`
       sets: $sets
       exercise_id: $exercise_id
     ) {
-      id
+      component_id
       repetitions
       sets
       exercise_id
