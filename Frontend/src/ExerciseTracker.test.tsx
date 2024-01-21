@@ -7,6 +7,7 @@ import userEvent from "@testing-library/user-event";
 jest.mock("@apollo/client", () => {
   const useQuery = jest.fn();
   const useMutation = jest.fn(() => [jest.fn(), {}]);
+  //When the mock useMutation is called, it returns an array with two elements: another mock function and an empty object. This mirrors the real useMutation hook, which returns an array with a mutate function and an object containing the mutation result.
   const gql = jest.fn();
 
   return {

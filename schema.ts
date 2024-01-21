@@ -29,6 +29,7 @@ type exercise {
   type Mutation {
     createExercise(name: String!, muscletrained: String!): exercise!
     deleteExercise(id: ID!): ID
+    deleteComponent(component_id: ID!): ID
     createComponent(repetitions: Int!, sets: Int!, exercise_id: ID!): component!
   }
 

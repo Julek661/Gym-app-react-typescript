@@ -16,6 +16,12 @@ export const DELETE_EXERCISE = gql`
   }
 `;
 
+export const DELETE_COMPONENT = gql`
+  mutation DeleteComponent($component_id: ID!) {
+    deleteComponent(component_id: $component_id)
+  }
+`;
+
 export const CREATE_COMPONENT = gql`
   mutation CreateComponent($repetitions: Int!, $sets: Int!, $exercise_id: ID!) {
     createComponent(

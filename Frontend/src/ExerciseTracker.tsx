@@ -1,19 +1,18 @@
-import React, { useState } from "react";
+import React, { MouseEventHandler, useState } from "react";
 import { GET_EXERCISES } from "./Queries/Queries";
 import { CREATE_EXERCISE, DELETE_EXERCISE } from "./Mutations/Mutations";
 import { useQuery, useMutation } from "@apollo/client";
 
 function ExerciseTracker() {
-  const [newExerciseName, setNewExerciseName] = useState("");
-  const [newMuscleTrained, setNewMuscleTrained] = useState("");
+  const [newExerciseName, setNewExerciseName] = useState<string>("");
+  const [newMuscleTrained, setNewMuscleTrained] = useState<string>("");
 
   const { loading, error, data = [], refetch } = useQuery(GET_EXERCISES);
 
   const [createExercise] = useMutation(CREATE_EXERCISE);
   const [deleteExercise] = useMutation(DELETE_EXERCISE);
 
-  const handleCreateExercise = async (e: any) => {
-    e.preventDefault();
+  const handleCreateExercise = async () => {
     try {
       const { data = [] } = await createExercise({
         variables: {

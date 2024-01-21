@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import { FieldValues, set, useForm } from "react-hook-form";
 import { GET_EXERCISES } from "../Queries/Queries";
-import { useMutation, useQuery } from "@apollo/client";
+import {
+  ApolloQueryResult,
+  Operation,
+  OperationVariables,
+  useMutation,
+  useQuery,
+} from "@apollo/client";
 import { CREATE_COMPONENT } from "../Mutations/Mutations";
+import { GetExerciseData } from "./WorkoutCreator";
 
 interface ExerciseData {
   exercises: {
@@ -11,8 +18,11 @@ interface ExerciseData {
     muscletrained: string;
   }[];
 }
+interface workoutFormProps {
+  refetch: () => Promise<ApolloQueryResult<GetExerciseData>>;
+}
 
-export default function WorkoutForm() {
+export default function WorkoutForm({ refetch }: workoutFormProps) {
   const { data = { exercises: [] } } = useQuery<ExerciseData>(GET_EXERCISES);
   const [workout, setWorkout] = useState<FieldValues>({});
   const { exercises } = data;
@@ -47,11 +57,10 @@ export default function WorkoutForm() {
         },
       });
 
-      console.log("Mutation response:", data);
-
       if (data && data.createComponent) {
         console.log("Created component:", data.createComponent);
         setWorkout({});
+        refetch();
       } else {
         console.error("Failed to create component. No data returned.");
         setWorkout({});

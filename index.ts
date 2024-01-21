@@ -54,6 +54,19 @@ const resolvers = {
         throw new Error("Unable to create component");
       }
     },
+    deleteComponent: async (_: any, { component_id }: any) => {
+      try {
+        const result = await pool.query(
+          "DELETE FROM workout_component WHERE component_id = $1 RETURNING component_id",
+          [component_id]
+        );
+
+        return result.rows[0] ? result.rows[0].component_id : null;
+      } catch (error) {
+        console.error("Error deleting component:", error);
+        throw new Error("Unable to delete component");
+      }
+    },
     createExercise: async (_: any, { name, muscletrained }: any) => {
       try {
         const result = await pool.query(
