@@ -37,25 +37,27 @@ export default function WorkoutCreator() {
       console.error("Error deleting component:", error.message);
     }
   };
-  const exercisesTable = exerciseData?.exerciseComponents.map((exercise, index) => {
-    return (
-      <React.Fragment key={index}>
-
-        <tr>
-          <td>{exercise.name}</td>
-          <td>{exercise.sets}</td>
-          <td>{exercise.repetitions}</td>
-        </tr>
-        <button
-          onClick={() => {
-            handleDeleteComponent(exercise.component_id);
-          }}
-        >
-          Delete
-        </button>
-      </React.Fragment>
-    );
-  });
+  const exercisesTable = exerciseData?.exerciseComponents.map(
+    (exercise, index) => {
+      return (
+        <React.Fragment key={index}>
+          <tr>
+            <td>{exercise.name}</td>
+            <td>{exercise.sets}</td>
+            <td>{exercise.repetitions}</td>
+          </tr>
+          <button
+            id={(index + 1).toString()}
+            onClick={() => {
+              handleDeleteComponent(exercise.component_id);
+            }}
+          >
+            Delete
+          </button>
+        </React.Fragment>
+      );
+    }
+  );
 
   return (
     <div>

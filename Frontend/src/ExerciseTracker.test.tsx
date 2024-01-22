@@ -1,8 +1,9 @@
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import ExerciseTracker from "./ExerciseTracker";
 import React from "react";
 import userEvent from "@testing-library/user-event";
+
 
 jest.mock("@apollo/client", () => {
   const useQuery = jest.fn();
@@ -84,25 +85,26 @@ describe("ExerciseTracker", () => {
     });
   });
 
-  it("should call mutation when exercise is deleted", () => {
+  it("should call mutation when exercise is deleted", async () => {
     const { useQuery, useMutation } = require("@apollo/client");
     const deleteExercise = jest.fn();
     useQuery.mockReturnValue({
       loading: false,
       data: {
-        exercises: [
-          { id: "1", name: "Exercise 1" },
-          { id: "2", name: "Exercise 2" },
-        ],
+        exercises: [{ id: "1", name: "Exercise 1" }],
       },
     });
     useMutation.mockReturnValue([deleteExercise, {}]);
     render(<ExerciseTracker />);
     expect(screen.getByText("Exercise 1")).toBeInTheDocument();
-    expect(screen.getByText("Exercise 2")).toBeInTheDocument();
     const deleteExerciseButton = screen.getByText("Delete Exercise");
     expect(deleteExerciseButton).toBeInTheDocument();
     deleteExerciseButton.click();
     expect(deleteExercise).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(deleteExercise).toHaveBeenCalledWith({
+        variables: { id: "1" },
+      });
+    });
   });
 });
