@@ -4,7 +4,6 @@ import ExerciseTracker from "./ExerciseTracker";
 import React from "react";
 import userEvent from "@testing-library/user-event";
 
-
 jest.mock("@apollo/client", () => {
   const useQuery = jest.fn();
   const useMutation = jest.fn(() => [jest.fn(), {}]);

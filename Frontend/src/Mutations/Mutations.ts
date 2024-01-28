@@ -1,5 +1,25 @@
 import { gql } from "@apollo/client";
-
+export const CREATE_USER = gql`
+  mutation CreateUser(
+    $email: String!
+    $password: String!
+    $first_name: String!
+    $last_name: String!
+  ) {
+    createUser(
+      email: $email
+      password: $password
+      first_name: $first_name
+      last_name: $last_name
+    ) {
+      user_id
+      email
+      password
+      first_name
+      last_name
+    }
+  }
+`;
 export const CREATE_EXERCISE = gql`
   mutation CreateExercise($name: String!, $muscletrained: String!) {
     createExercise(name: $name, muscletrained: $muscletrained) {

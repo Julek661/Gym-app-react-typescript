@@ -5,6 +5,18 @@ import pool from "./db";
 
 const resolvers = {
   Query: {
+    login: async (_, { email, password }) => {
+      try {
+        const result = await pool.query(
+          "SELECT * FROM users WHERE email = $1 AND password = $2",
+          [email, password]
+        );
+        return result.rows[0];
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        throw new Error("Unable to fetch user");
+      }
+    },
     exercises: async () => {
       try {
         const result = await pool.query("SELECT * FROM exercise");
@@ -39,19 +51,19 @@ const resolvers = {
     },
   },
   Mutation: {
-    createComponent: async (
+    createUser: async (
       _: any,
-      { repetitions, sets, exercise_id }: any
+      { email, password, first_name, last_name }: any
     ) => {
       try {
         const result = await pool.query(
-          "INSERT INTO workout_component (repetitions, sets, exercise_id) values ($1, $2, $3) RETURNING *",
-          [repetitions, sets, exercise_id]
+          "INSERT INTO users (email, password, first_name, last_name) VALUES ($1, $2, $3, $4) RETURNING *",
+          [email, password, first_name, last_name]
         );
         return result.rows[0];
       } catch (error) {
-        console.error("Error creating component:", error);
-        throw new Error("Unable to create component");
+        console.error("Error creating user:", error);
+        throw new Error("Unable to create user");
       }
     },
     deleteComponent: async (_: any, { component_id }: any) => {

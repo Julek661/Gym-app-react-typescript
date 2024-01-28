@@ -1,0 +1,15 @@
+.NavBar {
+  background-color: #2a77be;
+  &__Link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.5rem;
+    padding: 1rem;
+    font-style: normal;
+    font-weight: 1000;
+    &:hover {
+      color: #0f0c0c;
+      text-decoration: none;
+    }
+  }
+}
