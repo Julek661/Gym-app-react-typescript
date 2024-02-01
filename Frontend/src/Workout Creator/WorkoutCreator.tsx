@@ -22,7 +22,7 @@ export default function WorkoutCreator() {
   >(GET_WORKOUT_COMPONENTS);
 
   const [deleteComponent] = useMutation(DELETE_COMPONENT);
-
+ 
   const handleDeleteComponent = async (component_id: string) => {
     try {
       const { data } = await deleteComponent({

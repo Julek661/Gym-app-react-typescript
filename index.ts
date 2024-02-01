@@ -11,10 +11,13 @@ const resolvers = {
           "SELECT * FROM users WHERE email = $1 AND password = $2",
           [email, password]
         );
+        if (result.rows.length === 0) {
+          throw new Error("Incorrect Details Provided");
+        }
         return result.rows[0];
       } catch (error) {
-        console.error("Error fetching user:", error);
-        throw new Error("Unable to fetch user");
+        
+        throw error;
       }
     },
     exercises: async () => {

@@ -31,7 +31,7 @@ type User{
     exerciseComponents: [WorkoutComponent!]!
     exercises: [exercise!]!
     exercise(id: ID!): exercise
-    login(email: String!, password: String!): User!
+    login(email: String!, password: String!): User
   }
 
   type Mutation {

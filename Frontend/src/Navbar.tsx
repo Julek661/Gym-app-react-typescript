@@ -1,22 +1,23 @@
 import { Link } from "react-router-dom";
 import React from "react";
 import "./Navbar.scss";
+import { UserContext } from "./App";
 
 export default function Navbar() {
-  return (
-    <nav className="NavBar">
-      <Link className="NavBar__Link" to="/">
-        Home
+  const loggedIn = React.useContext(UserContext);
+
+  const navs = [
+    { name: "Home", path: "/" },
+    { name: "Exercise Tracker", path: "/exercise" },
+    { name: "Workouts", path: "/workout" },
+  ];
+  const navLinks = navs.map((nav) => {
+    return (
+      <Link className="NavBar__Link" to={nav.path}>
+        {nav.name}
       </Link>
-      <Link className="NavBar__Link" to="/login">
-        Login
-      </Link>
-      <Link className="NavBar__Link" to="/exercise">
-        Exercise Tracker
-      </Link>
-      <Link className="NavBar__Link" to="/workout">
-        Workouts
-      </Link>
-    </nav>
-  );
+    );
+  });
+
+  return <nav className="NavBar">{Boolean(loggedIn) && navLinks}</nav>;
 }
