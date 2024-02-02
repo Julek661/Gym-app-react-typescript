@@ -21,11 +21,20 @@ export const CREATE_USER = gql`
   }
 `;
 export const CREATE_EXERCISE = gql`
-  mutation CreateExercise($name: String!, $muscletrained: String!) {
-    createExercise(name: $name, muscletrained: $muscletrained) {
+  mutation CreateExercise(
+    $name: String!
+    $muscletrained: String!
+    $user_id: String!
+  ) {
+    createExercise(
+      name: $name
+      muscletrained: $muscletrained
+      user_id: $user_id
+    ) {
       id
       name
       muscletrained
+      user_id
     }
   }
 `;

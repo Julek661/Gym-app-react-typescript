@@ -12,6 +12,7 @@ CREATE TABLE exercise (
   id serial PRIMARY KEY,
   name VARCHAR (255) NOT NULL,
   muscleTrained VARCHAR (255) NOT NULL
+  user_id VARCHAR (255) REFERENCES users(user_id)
 );
 
 CREATE TABLE workout_component (

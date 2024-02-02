@@ -16,13 +16,24 @@ const resolvers = {
         }
         return result.rows[0];
       } catch (error) {
-        
         throw error;
       }
     },
     exercises: async () => {
       try {
         const result = await pool.query("SELECT * FROM exercise");
+        return result.rows;
+      } catch (error) {
+        console.error("Error fetching exercises:", error);
+        throw new Error("Unable to fetch exercises");
+      }
+    },
+    userExercises: async (_, { user_id }) => {
+      try {
+        const result = await pool.query(
+          "SELECT * FROM exercise WHERE user_id = $1",
+          [user_id]
+        );
         return result.rows;
       } catch (error) {
         console.error("Error fetching exercises:", error);
@@ -82,11 +93,11 @@ const resolvers = {
         throw new Error("Unable to delete component");
       }
     },
-    createExercise: async (_: any, { name, muscletrained }: any) => {
+    createExercise: async (_: any, { name, muscletrained, user_id }: any) => {
       try {
         const result = await pool.query(
-          "INSERT INTO exercise (name, muscletrained) VALUES ($1, $2) RETURNING *",
-          [name, muscletrained]
+          "INSERT INTO exercise (name, muscletrained, user_id) VALUES ($1, $2, $3) RETURNING *",
+          [name, muscletrained, user_id]
         );
         return result.rows[0];
       } catch (error) {

@@ -4,6 +4,7 @@ type exercise {
     id: ID!
     name: String!
     muscletrained: String
+    user_id: String!
   }
 
   type component {
@@ -29,6 +30,7 @@ type User{
 
   type Query {
     exerciseComponents: [WorkoutComponent!]!
+    userExercises(user_id: String!): [exercise]!
     exercises: [exercise!]!
     exercise(id: ID!): exercise
     login(email: String!, password: String!): User
@@ -36,7 +38,7 @@ type User{
 
   type Mutation {
     createUser(email: String!, password: String!, first_name: String!, last_name: String!): User!
-    createExercise(name: String!, muscletrained: String!): exercise!
+    createExercise(name: String!, muscletrained: String!, user_id: String!): exercise!
     deleteExercise(id: ID!): ID
     deleteComponent(component_id: ID!): ID
     createComponent(repetitions: Int!, sets: Int!, exercise_id: ID!): component!

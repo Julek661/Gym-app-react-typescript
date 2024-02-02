@@ -1,13 +1,20 @@
-import React, { MouseEventHandler, useState } from "react";
-import { GET_EXERCISES } from "./Queries/Queries";
+import React, { MouseEventHandler, useContext, useState } from "react";
+import { GET_EXERCISES, GET_USER_EXERCISES } from "./Queries/Queries";
 import { CREATE_EXERCISE, DELETE_EXERCISE } from "./Mutations/Mutations";
 import { useQuery, useMutation } from "@apollo/client";
+import { UserContext } from "./App";
 
 function ExerciseTracker() {
+  const loggedIn = useContext(UserContext);
   const [newExerciseName, setNewExerciseName] = useState<string>("");
   const [newMuscleTrained, setNewMuscleTrained] = useState<string>("");
 
-  const { loading, error, data = [], refetch } = useQuery(GET_EXERCISES);
+  const {
+    loading,
+    error,
+    data = [],
+    refetch,
+  } = useQuery(GET_USER_EXERCISES, { variables: { user_id: loggedIn } });
 
   const [createExercise] = useMutation(CREATE_EXERCISE);
   const [deleteExercise] = useMutation(DELETE_EXERCISE);
@@ -18,6 +25,7 @@ function ExerciseTracker() {
         variables: {
           name: newExerciseName,
           muscletrained: newMuscleTrained,
+          user_id: loggedIn,
         },
       });
 
@@ -94,7 +102,7 @@ function ExerciseTracker() {
       </div>
 
       <h2>Exercises</h2>
-      {data.exercises.map((exercise: any) => (
+      {data?.userExercises.map((exercise: any) => (
         <div key={exercise.id}>
           <h3>{exercise.name}</h3>
           <p>Muscle Trained: {exercise.muscletrained}</p>

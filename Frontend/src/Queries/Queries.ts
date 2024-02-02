@@ -6,7 +6,7 @@ export const LOGIN = gql`
       user_id
     }
   }
-`; 
+`;
 
 export const GET_EXERCISES = gql`
   query {
@@ -14,6 +14,17 @@ export const GET_EXERCISES = gql`
       id
       name
       muscletrained
+    }
+  }
+`;
+
+export const GET_USER_EXERCISES = gql`
+  query UserExercises($user_id: String!) {
+    userExercises(user_id: $user_id) {
+      id
+      name
+      muscletrained
+      user_id
     }
   }
 `;
