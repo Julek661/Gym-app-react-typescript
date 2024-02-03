@@ -14,6 +14,14 @@ type exercise {
   exercise_id: ID!
  }
 
+ type userComponent {
+  component_id: ID!
+  repetitions: Int!
+  sets: Int!
+  exercise_id: ID!
+  user_id: String!
+ }
+
  type WorkoutComponent {
   component_id: ID!
   repetitions: Int!
@@ -30,6 +38,7 @@ type User{
 
   type Query {
     exerciseComponents: [WorkoutComponent!]!
+    exerciseComponentsUser(user_id: String!): [WorkoutComponent]!
     userExercises(user_id: String!): [exercise]!
     exercises: [exercise!]!
     exercise(id: ID!): exercise
@@ -42,6 +51,8 @@ type User{
     deleteExercise(id: ID!): ID
     deleteComponent(component_id: ID!): ID
     createComponent(repetitions: Int!, sets: Int!, exercise_id: ID!): component!
+    createComponentUser(repetitions: Int!, sets: Int!, exercise_id: ID!, user_id: String!): userComponent!
+    deleteComponentUser(component_id: ID!): ID
   }
 
 `;

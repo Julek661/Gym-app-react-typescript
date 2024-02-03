@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import WorkoutForm from "./WorkoutForm";
-import { GET_WORKOUT_COMPONENTS } from "../Queries/Queries";
+import {
+  GET_USER_WORKOUT_COMPONENTS,
+  GET_WORKOUT_COMPONENTS,
+} from "../Queries/Queries";
 import { OperationVariables, useMutation, useQuery } from "@apollo/client";
 import { DELETE_COMPONENT } from "../Mutations/Mutations";
+import { UserContext } from "../App";
 
 interface Exercise {
   component_id: string;
@@ -11,18 +15,27 @@ interface Exercise {
   name: string;
 }
 export interface GetExerciseData {
-  exerciseComponents: Exercise[];
+  exerciseComponentsUser: Exercise[];
+}
+interface GetUserWorkoutComponentsInput {
+  user_id: string;
 }
 
 export default function WorkoutCreator() {
+  const loggedIn = useContext<string>(UserContext);
+  // sets form open state
   const [isFormOpen, setIsFormOpen] = React.useState<Boolean>(false);
-  const { data: exerciseData = { exerciseComponents: [] }, refetch } = useQuery<
+  // gets gets user workout data
+  const { data: exerciseData = { exerciseComponentsUser: [] }, refetch } = useQuery<
     GetExerciseData,
-    OperationVariables
-  >(GET_WORKOUT_COMPONENTS);
-
-  const [deleteComponent] = useMutation(DELETE_COMPONENT);
+    GetUserWorkoutComponentsInput
+  >(GET_USER_WORKOUT_COMPONENTS, {
+    variables: { user_id: loggedIn },
+  });
  
+  // Delete Workout Component
+  const [deleteComponent] = useMutation(DELETE_COMPONENT);
+
   const handleDeleteComponent = async (component_id: string) => {
     try {
       const { data } = await deleteComponent({
@@ -37,7 +50,7 @@ export default function WorkoutCreator() {
       console.error("Error deleting component:", error.message);
     }
   };
-  const exercisesTable = exerciseData?.exerciseComponents.map(
+  const exercisesTable = exerciseData?.exerciseComponentsUser.map(
     (exercise, index) => {
       return (
         <React.Fragment key={index}>

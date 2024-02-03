@@ -63,6 +63,18 @@ const resolvers = {
         throw new Error("Unable to fetch exercise components");
       }
     },
+    exerciseComponentsUser: async (_, { user_id }) => {
+      try {
+        const result = await pool.query(
+          "SELECT workout_component.*, exercise.name FROM workout_component INNER JOIN exercise ON exercise.id = workout_component.exercise_id WHERE exercise.user_id = $1",
+          [user_id]
+        );
+        return result.rows;
+      } catch (error) {
+        console.error("Error fetching exercise components:", error);
+        throw new Error("Unable to fetch exercise components");
+      }
+    },
   },
   Mutation: {
     createUser: async (
@@ -116,6 +128,34 @@ const resolvers = {
       } catch (error) {
         console.error("Error deleting exercise:", error);
         throw new Error("Unable to delete exercise");
+      }
+    },
+    createComponentUser: async (
+      _: any,
+      { repetitions, sets, exercise_id, user_id }: any
+    ) => {
+      try {
+        const result = await pool.query(
+          "INSERT INTO workout_component (repetitions, sets, exercise_id, user_id) VALUES ($1, $2, $3, $4) RETURNING *",
+          [repetitions, sets, exercise_id, user_id]
+        );
+        return result.rows[0];
+      } catch (error) {
+        console.error("Error creating component:", error);
+        throw new Error("Unable to create component");
+      }
+    },
+    deleteComponentUser: async (_: any, { component_id }: any) => {
+      try {
+        const result = await pool.query(
+          "DELETE FROM workout_component WHERE component_id = $1 RETURNING component_id",
+          [component_id]
+        );
+
+        return result.rows[0] ? result.rows[0].component_id : null;
+      } catch (error) {
+        console.error("Error deleting component:", error);
+        throw new Error("Unable to delete component");
       }
     },
   },

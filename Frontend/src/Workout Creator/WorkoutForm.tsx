@@ -1,47 +1,71 @@
-import React, { useState } from "react";
-import { FieldValues, set, useForm } from "react-hook-form";
-import { GET_EXERCISES } from "../Queries/Queries";
-import {
-  ApolloQueryResult,
-  Operation,
-  OperationVariables,
-  useMutation,
-  useQuery,
-} from "@apollo/client";
-import { CREATE_COMPONENT } from "../Mutations/Mutations";
+import React from "react";
+import { FieldValues, useForm } from "react-hook-form";
+import { GET_USER_EXERCISES } from "../Queries/Queries";
+import { ApolloQueryResult, useMutation, useQuery } from "@apollo/client";
+import { CREATE_COMPONENT_USER } from "../Mutations/Mutations";
 import { GetExerciseData } from "./WorkoutCreator";
+import { UserContext } from "../App";
 
 interface ExerciseData {
-  exercises: {
+  userExercises: {
     id: string;
     name: string;
     muscletrained: string;
+    user_id: string;
   }[];
 }
 interface workoutFormProps {
   refetch: () => Promise<ApolloQueryResult<GetExerciseData>>;
 }
+interface UserId {
+  user_id: string;
+}
+
+interface CreateComponentData {
+  createComponentUser: {
+    id: string;
+    repetitions: number;
+    sets: number;
+    user_id: string;
+    exercise_id: string;
+  };
+}
+
+interface CreateComponentVariables {
+  repetitions: number;
+  exercise_id: string;
+  sets: number;
+  user_id: string;
+}
 
 export default function WorkoutForm({ refetch }: workoutFormProps) {
-  const { data = { exercises: [] } } = useQuery<ExerciseData>(GET_EXERCISES);
-  const [workout, setWorkout] = useState<FieldValues>({});
-  const { exercises } = data;
+  const loggedIn = React.useContext<string>(UserContext);
+  const { data = { userExercises: [] } } = useQuery<ExerciseData, UserId>(
+    GET_USER_EXERCISES,
+    { variables: { user_id: loggedIn } }
+  );
+  const { userExercises } = data;
   const { register, handleSubmit } = useForm();
-  const [createComponent] = useMutation(CREATE_COMPONENT);
+
+  const [createComponent] = useMutation<
+    CreateComponentData,
+    CreateComponentVariables
+  >(CREATE_COMPONENT_USER);
+
+  console.log("userExercises", userExercises);
 
   const handleSubmitExercise = ({
     Sets,
     Repetitions,
     Exercise,
   }: FieldValues) => {
-    const exerciseSelected = exercises.find(
-      (exercise) => exercise.name === Exercise
+    const exerciseSelected = userExercises.find(
+      (userExercises) => userExercises.name === Exercise
     );
     const sets = Number(Sets);
     const repetitions = Number(Repetitions);
 
     const newWorkout = { sets, repetitions, exerciseID: exerciseSelected?.id };
-    setWorkout(newWorkout);
 
     handleCreateComponent(newWorkout);
   };
@@ -49,25 +73,25 @@ export default function WorkoutForm({ refetch }: workoutFormProps) {
   const handleCreateComponent = async (workout: FieldValues) => {
     const { sets, repetitions, exerciseID } = workout;
     try {
-      const { data = [] } = await createComponent({
+      const response = await createComponent({
         variables: {
           repetitions: repetitions,
           exercise_id: exerciseID,
           sets: sets,
+          user_id: loggedIn,
         },
       });
 
-      if (data && data.createComponent) {
-        console.log("Created component:", data.createComponent);
-        setWorkout({});
+      const data = response.data || undefined;
+
+      if (data && data?.createComponentUser) {
+        console.log("Created component:", data.createComponentUser);
         refetch();
       } else {
         console.error("Failed to create component. No data returned.");
-        setWorkout({});
       }
     } catch (error: any) {
       console.error("Error creating component:", error.message);
-      setWorkout({});
     }
   };
 
@@ -82,7 +106,7 @@ export default function WorkoutForm({ refetch }: workoutFormProps) {
         <input {...register("Sets")} type="number" placeholder="Sets" />
 
         <select {...register("Exercise", { required: true })}>
-          {exercises?.map((option) => (
+          {userExercises?.map((option) => (
             <option key={option.id} value={option.name}>
               {option.name}
             </option>

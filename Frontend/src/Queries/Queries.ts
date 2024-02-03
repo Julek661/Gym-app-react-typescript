@@ -39,3 +39,13 @@ export const GET_WORKOUT_COMPONENTS = gql`
     }
   }
 `;
+export const GET_USER_WORKOUT_COMPONENTS = gql`
+  query ExerciseComponentsUser($user_id: String!) {
+    exerciseComponentsUser(user_id: $user_id) {
+      component_id
+      repetitions
+      sets
+      name
+    }
+  }
+`;

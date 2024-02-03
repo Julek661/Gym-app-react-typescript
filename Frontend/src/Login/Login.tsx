@@ -8,7 +8,7 @@ export default function Login({
 }: {
   setLoggedIn: React.Dispatch<SetStateAction<string>>;
 }) {
-  const loggedIn = React.useContext(UserContext);
+  const loggedIn = React.useContext<string>(UserContext);
   const [login, setLogin] = React.useState<boolean>(true);
 
   return (

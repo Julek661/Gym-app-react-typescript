@@ -65,3 +65,25 @@ export const CREATE_COMPONENT = gql`
     }
   }
 `;
+
+export const CREATE_COMPONENT_USER = gql`
+  mutation CreateComponentUser(
+    $repetitions: Int!
+    $sets: Int!
+    $exercise_id: ID!
+    $user_id: String!
+  ) {
+    createComponentUser(
+      repetitions: $repetitions
+      sets: $sets
+      exercise_id: $exercise_id
+      user_id: $user_id
+    ) {
+      component_id
+      repetitions
+      sets
+      exercise_id
+      user_id
+    }
+  }
+`;
