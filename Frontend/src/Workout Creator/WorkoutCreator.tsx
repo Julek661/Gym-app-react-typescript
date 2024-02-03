@@ -1,12 +1,10 @@
 import React, { useContext } from "react";
 import WorkoutForm from "./WorkoutForm";
-import {
-  GET_USER_WORKOUT_COMPONENTS,
-  GET_WORKOUT_COMPONENTS,
-} from "../Queries/Queries";
-import { OperationVariables, useMutation, useQuery } from "@apollo/client";
+import { GET_USER_WORKOUT_COMPONENTS } from "../Queries/Queries";
+import { useMutation, useQuery } from "@apollo/client";
 import { DELETE_COMPONENT } from "../Mutations/Mutations";
 import { UserContext } from "../App";
+import { useGQLMutation } from "../Mutations/Hooks/mutationsHooks";
 
 interface Exercise {
   component_id: string;
@@ -26,29 +24,28 @@ export default function WorkoutCreator() {
   // sets form open state
   const [isFormOpen, setIsFormOpen] = React.useState<Boolean>(false);
   // gets gets user workout data
-  const { data: exerciseData = { exerciseComponentsUser: [] }, refetch } = useQuery<
-    GetExerciseData,
-    GetUserWorkoutComponentsInput
-  >(GET_USER_WORKOUT_COMPONENTS, {
-    variables: { user_id: loggedIn },
-  });
- 
-  // Delete Workout Component
-  const [deleteComponent] = useMutation(DELETE_COMPONENT);
+  const { data: exerciseData = { exerciseComponentsUser: [] }, refetch } =
+    useQuery<GetExerciseData, GetUserWorkoutComponentsInput>(
+      GET_USER_WORKOUT_COMPONENTS,
+      {
+        variables: { user_id: loggedIn },
+      }
+    );
+
+  const { executeMutation } = useGQLMutation<null, { component_id: string }>(
+    DELETE_COMPONENT,
+    {
+      refetchQueries: [
+        {
+          query: GET_USER_WORKOUT_COMPONENTS,
+          variables: { user_id: loggedIn },
+        },
+      ],
+    }
+  );
 
   const handleDeleteComponent = async (component_id: string) => {
-    try {
-      const { data } = await deleteComponent({
-        variables: {
-          component_id,
-        },
-      });
-      if (data && data.deleteComponent) {
-        refetch();
-      }
-    } catch (error: any) {
-      console.error("Error deleting component:", error.message);
-    }
+    await executeMutation({ component_id });
   };
   const exercisesTable = exerciseData?.exerciseComponentsUser.map(
     (exercise, index) => {
