@@ -1,9 +1,22 @@
-import React, { MouseEventHandler, useContext, useState } from "react";
-import { GET_EXERCISES, GET_USER_EXERCISES } from "./Queries/Queries";
+import React, { useContext, useState } from "react";
+import { GET_USER_EXERCISES } from "./Queries/Queries";
 import { CREATE_EXERCISE, DELETE_EXERCISE } from "./Mutations/Mutations";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { UserContext } from "./App";
-
+import { useGQLMutation } from "./Mutations/Hooks/mutationsHooks";
+interface ExerciseInput {
+  user_id: string;
+  name: string;
+  muscletrained: string;
+}
+interface ExerciseOutput {
+  data: {
+    id: string;
+    name: string;
+    muscletrained: string;
+    user_id: string;
+  };
+}
 function ExerciseTracker() {
   const loggedIn = useContext(UserContext);
   const [newExerciseName, setNewExerciseName] = useState<string>("");
@@ -13,56 +26,34 @@ function ExerciseTracker() {
     loading,
     error,
     data = [],
-    refetch,
   } = useQuery(GET_USER_EXERCISES, { variables: { user_id: loggedIn } });
 
-  const [createExercise] = useMutation(CREATE_EXERCISE);
-  const [deleteExercise] = useMutation(DELETE_EXERCISE);
+  const { executeMutation: deleteExercise } = useGQLMutation(DELETE_EXERCISE, {
+    refetchQueries: [
+      { query: GET_USER_EXERCISES, variables: { user_id: loggedIn } },
+    ],
+  });
+  const { executeMutation: createExercise } = useGQLMutation<
+    ExerciseOutput,
+    ExerciseInput
+  >(CREATE_EXERCISE, {
+    refetchQueries: [
+      { query: GET_USER_EXERCISES, variables: { user_id: loggedIn } },
+    ],
+  });
 
-  const handleCreateExercise = async () => {
-    try {
-      const { data = [] } = await createExercise({
-        variables: {
-          name: newExerciseName,
-          muscletrained: newMuscleTrained,
-          user_id: loggedIn,
-        },
-      });
-
-      console.log("Mutation response:", data);
-
-      if (data && data.createExercise) {
-        console.log("Created exercise:", data.createExercise);
-        refetch();
-        setNewExerciseName("");
-        setNewMuscleTrained("");
-      } else {
-        console.error("Failed to create exercise. No data returned.");
-      }
-    } catch (error: any) {
-      console.error("Error creating exercise:", error.message);
-    }
+  const handleCreateExercise = () => {
+    createExercise({
+      name: newExerciseName,
+      muscletrained: newMuscleTrained,
+      user_id: loggedIn,
+    });
   };
 
   const handleDeleteExercise = async (id: string) => {
-    try {
-      const { data } = await deleteExercise({
-        variables: {
-          id,
-        },
-      });
-
-      console.log("Mutation response:", data);
-
-      if (data && data.deleteExercise) {
-        console.log("Deleted exercise with ID:", data.deleteExercise);
-        refetch();
-      } else {
-        console.error("Failed to delete exercise. No data returned.");
-      }
-    } catch (error: any) {
-      console.error("Error deleting exercise:", error.message);
-    }
+    await deleteExercise({
+      id,
+    });
   };
 
   if (loading) return <p>Loading...</p>;

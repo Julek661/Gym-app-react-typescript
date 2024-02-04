@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import WorkoutForm from "./WorkoutForm";
 import { GET_USER_WORKOUT_COMPONENTS } from "../Queries/Queries";
-import { useMutation, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { DELETE_COMPONENT } from "../Mutations/Mutations";
 import { UserContext } from "../App";
 import { useGQLMutation } from "../Mutations/Hooks/mutationsHooks";
