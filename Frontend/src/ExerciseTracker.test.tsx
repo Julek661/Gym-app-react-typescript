@@ -3,8 +3,6 @@ import { render, screen, waitFor } from "@testing-library/react";
 import ExerciseTracker from "./ExerciseTracker";
 import React, { useContext } from "react";
 import userEvent from "@testing-library/user-event";
-import { useGQLMutation } from "./Mutations/Hooks/mutationsHooks";
-import { CREATE_EXERCISE } from "./Mutations/Mutations";
 
 jest.mock("@apollo/client", () => {
   const useQuery = jest.fn();
@@ -71,9 +69,10 @@ describe("ExerciseTracker", () => {
     expect(screen.getByText("Exercise 1")).toBeInTheDocument();
     expect(screen.getByText("Exercise 2")).toBeInTheDocument();
   });
+
   it("should call mutation when exercise is created", () => {
-    const { useQuery, useMutation } = require("@apollo/client");
-    const createExercise = jest.fn();
+    const { useQuery } = require("@apollo/client");
+
     useQuery.mockReturnValue({
       loading: false,
       data: {
@@ -93,14 +92,14 @@ describe("ExerciseTracker", () => {
         ],
       },
     });
-    useMutation.mockReturnValue([createExercise, {}]);
+
     render(<ExerciseTracker />);
     expect(screen.getByText("Exercise 1")).toBeInTheDocument();
     expect(screen.getByText("Exercise 2")).toBeInTheDocument();
     const createExerciseButton = screen.getByText("Create Exercise");
     expect(createExerciseButton).toBeInTheDocument();
     createExerciseButton.click();
-    expect(createExercise).toHaveBeenCalled();
+    expect(mockExecuteMutation).toHaveBeenCalled();
   });
 
   it("should call with the right text mutation when exercise is created", async () => {
@@ -127,7 +126,7 @@ describe("ExerciseTracker", () => {
         ],
       },
     });
-    
+
     render(<ExerciseTracker />);
 
     userEvent.type(screen.getByPlaceholderText("Exercise Name"), "Exercise 3");
@@ -144,8 +143,8 @@ describe("ExerciseTracker", () => {
   });
 
   it("should call mutation when exercise is deleted", async () => {
-    const { useQuery, useMutation } = require("@apollo/client");
-    const deleteExercise = jest.fn();
+    const { useQuery } = require("@apollo/client");
+
     useQuery.mockReturnValue({
       loading: false,
       data: {
@@ -159,16 +158,15 @@ describe("ExerciseTracker", () => {
         ],
       },
     });
-    useMutation.mockReturnValue([deleteExercise, {}]);
     render(<ExerciseTracker />);
     expect(screen.getByText("Exercise 1")).toBeInTheDocument();
     const deleteExerciseButton = screen.getByText("Delete Exercise");
     expect(deleteExerciseButton).toBeInTheDocument();
     deleteExerciseButton.click();
-    expect(deleteExercise).toHaveBeenCalled();
+    expect(mockExecuteMutation).toHaveBeenCalled();
     await waitFor(() => {
-      expect(deleteExercise).toHaveBeenCalledWith({
-        variables: { id: "1" },
+      expect(mockExecuteMutation).toHaveBeenCalledWith({
+        id: "1",
       });
     });
   });

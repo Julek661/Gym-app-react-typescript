@@ -10,25 +10,30 @@ interface ExerciseInput {
   muscletrained: string;
 }
 interface ExerciseOutput {
-  data: {
+  userExercises: {
     id: string;
     name: string;
     muscletrained: string;
     user_id: string;
-  };
+  }[];
 }
 function ExerciseTracker() {
-  const loggedIn = useContext(UserContext);
+  const loggedIn: string = useContext(UserContext);
   const [newExerciseName, setNewExerciseName] = useState<string>("");
   const [newMuscleTrained, setNewMuscleTrained] = useState<string>("");
 
   const {
     loading,
     error,
-    data = [],
-  } = useQuery(GET_USER_EXERCISES, { variables: { user_id: loggedIn } });
+    data = { userExercises: [] },
+  } = useQuery<ExerciseOutput, { user_id: string }>(GET_USER_EXERCISES, {
+    variables: { user_id: loggedIn },
+  });
 
-  const { executeMutation: deleteExercise } = useGQLMutation(DELETE_EXERCISE, {
+  const { executeMutation: deleteExercise } = useGQLMutation<
+    null,
+    { id: string }
+  >(DELETE_EXERCISE, {
     refetchQueries: [
       { query: GET_USER_EXERCISES, variables: { user_id: loggedIn } },
     ],
