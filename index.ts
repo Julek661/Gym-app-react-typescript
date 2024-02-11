@@ -1,173 +1,29 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import { typeDefs } from "./schema";
-import pool from "./db";
+import { typeDefsWorkout } from "./Schema/schema";
+import { resolvers } from "./Resolvers/resolversExercises";
+import fetch from "node-fetch";
 
-const resolvers = {
-  Query: {
-    login: async (_, { email, password }) => {
-      try {
-        const result = await pool.query(
-          "SELECT * FROM users WHERE email = $1 AND password = $2",
-          [email, password]
-        );
-        if (result.rows.length === 0) {
-          throw new Error("Incorrect Details Provided");
-        }
-        return result.rows[0];
-      } catch (error) {
-        throw error;
-      }
-    },
-    exercises: async () => {
-      try {
-        const result = await pool.query("SELECT * FROM exercise");
-        return result.rows;
-      } catch (error) {
-        console.error("Error fetching exercises:", error);
-        throw new Error("Unable to fetch exercises");
-      }
-    },
-    userExercises: async (_, { user_id }) => {
-      try {
-        const result = await pool.query(
-          "SELECT * FROM exercise WHERE user_id = $1",
-          [user_id]
-        );
-        return result.rows;
-      } catch (error) {
-        console.error("Error fetching exercises:", error);
-        throw new Error("Unable to fetch exercises");
-      }
-    },
-    exercise: async (_, { id }) => {
-      try {
-        const result = await pool.query(
-          "SELECT * FROM exercise WHERE id = $1",
-          [id]
-        );
-        return result.rows[0];
-      } catch (error) {
-        console.error("Error fetching exercise:", error);
-        throw new Error("Unable to fetch exercise");
-      }
-    },
-    exerciseComponents: async () => {
-      try {
-        const result = await pool.query(
-          "SELECT workout_component.*, exercise.name FROM workout_component INNER JOIN exercise ON exercise.id = workout_component.exercise_id"
-        );
-        return result.rows;
-      } catch (error) {
-        console.error("Error fetching exercise components:", error);
-        throw new Error("Unable to fetch exercise components");
-      }
-    },
-    exerciseComponentsUser: async (_, { user_id }) => {
-      try {
-        const result = await pool.query(
-          "SELECT workout_component.*, exercise.name FROM workout_component INNER JOIN exercise ON exercise.id = workout_component.exercise_id WHERE exercise.user_id = $1",
-          [user_id]
-        );
-        return result.rows;
-      } catch (error) {
-        console.error("Error fetching exercise components:", error);
-        throw new Error("Unable to fetch exercise components");
-      }
-    },
-  },
-  Mutation: {
-    createUser: async (
-      _: any,
-      { email, password, first_name, last_name }: any
-    ) => {
-      try {
-        const result = await pool.query(
-          "INSERT INTO users (email, password, first_name, last_name) VALUES ($1, $2, $3, $4) RETURNING *",
-          [email, password, first_name, last_name]
-        );
-        return result.rows[0];
-      } catch (error) {
-        console.error("Error creating user:", error);
-        throw new Error("Unable to create user");
-      }
-    },
-    deleteComponent: async (_: any, { component_id }: any) => {
-      try {
-        const result = await pool.query(
-          "DELETE FROM workout_component WHERE component_id = $1 RETURNING component_id",
-          [component_id]
-        );
+async function getFoodId(foodName) {
+  const response = await fetch(`https://api.nal.usda.gov/fdc/v1/foods/search?query=${foodName}&api_key=bmBHDYK3A8wNXfCgEgHV6xZKnCLPdsDvqLcQU5Cl`);
+  const data: any = await response.json();
+  return data.foods[0].fdcId; 
+}
 
-        return result.rows[0] ? result.rows[0].component_id : null;
-      } catch (error) {
-        console.error("Error deleting component:", error);
-        throw new Error("Unable to delete component");
-      }
-    },
-    createExercise: async (_: any, { name, muscletrained, user_id }: any) => {
-      try {
-        const result = await pool.query(
-          "INSERT INTO exercise (name, muscletrained, user_id) VALUES ($1, $2, $3) RETURNING *",
-          [name, muscletrained, user_id]
-        );
-        return result.rows[0];
-      } catch (error) {
-        console.error("Error creating exercise:", error);
-        throw new Error("Unable to create exercise");
-      }
-    },
-    deleteExercise: async (_: any, { id }: any) => {
-      try {
-        const result = await pool.query(
-          "DELETE FROM exercise WHERE id = $1 RETURNING id",
-          [id]
-        );
-
-        return result.rows[0] ? result.rows[0].id : null;
-      } catch (error) {
-        console.error("Error deleting exercise:", error);
-        throw new Error("Unable to delete exercise");
-      }
-    },
-    createComponentUser: async (
-      _: any,
-      { repetitions, sets, exercise_id, user_id }: any
-    ) => {
-      try {
-        const result = await pool.query(
-          "INSERT INTO workout_component (repetitions, sets, exercise_id, user_id) VALUES ($1, $2, $3, $4) RETURNING *",
-          [repetitions, sets, exercise_id, user_id]
-        );
-        return result.rows[0];
-      } catch (error) {
-        console.error("Error creating component:", error);
-        throw new Error("Unable to create component");
-      }
-    },
-    deleteComponentUser: async (_: any, { component_id }: any) => {
-      try {
-        const result = await pool.query(
-          "DELETE FROM workout_component WHERE component_id = $1 RETURNING component_id",
-          [component_id]
-        );
-
-        return result.rows[0] ? result.rows[0].component_id : null;
-      } catch (error) {
-        console.error("Error deleting component:", error);
-        throw new Error("Unable to delete component");
-      }
-    },
-  },
-};
+async function getFoodData(foodId) {
+  const response = await fetch(`https://api.nal.usda.gov/fdc/v1/food/${foodId}?api_key=bmBHDYK3A8wNXfCgEgHV6xZKnCLPdsDvqLcQU5Cl`);
+  const data = await response.json();
+  console.log(data);
+}
 
 const main = async () => {
   const server = new ApolloServer({
-    typeDefs,
+    typeDefs: typeDefsWorkout,
     resolvers,
   });
-
+  getFoodId("apple").then(getFoodData);
   console.log("Starting server");
+  
   await startStandaloneServer(server, {
     listen: { port: 4000 },
   });
