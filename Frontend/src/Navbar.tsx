@@ -7,13 +7,14 @@ export default function Navbar() {
   const loggedIn = React.useContext(UserContext);
 
   const navs = [
-    { name: "Home", path: "/" },
-    { name: "Exercise Tracker", path: "/exercise" },
-    { name: "Workouts", path: "/workout" },
+    { name: "Home", path: "/", id: 1 },
+    { name: "Exercise Tracker", path: "/exercise", id: 2},
+    { name: "Workouts", path: "/workout", id: 3},
+    { name: "Calorie Tracker", path: "/calorie", id: 4},
   ];
   const navLinks = navs.map((nav) => {
     return (
-      <Link className="NavBar__Link" to={nav.path}>
+      <Link className="NavBar__Link" to={nav.path} key={nav.id}>
         {nav.name}
       </Link>
     );

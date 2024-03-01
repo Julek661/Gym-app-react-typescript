@@ -38,7 +38,7 @@ interface CreateComponentVariables {
   user_id: string;
 }
 
-export default function WorkoutForm({ refetch }: workoutFormProps) {
+export default function WorkoutForm({ refetch }: Readonly<workoutFormProps>) {
   const loggedIn = React.useContext<string>(UserContext);
   const { data = { userExercises: [] } } = useQuery<ExerciseData, UserId>(
     GET_USER_EXERCISES,
@@ -82,9 +82,9 @@ export default function WorkoutForm({ refetch }: workoutFormProps) {
         },
       });
 
-      const data = response.data || undefined;
+      const data = response.data ?? undefined;
 
-      if (data && data?.createComponentUser) {
+      if (data?.createComponentUser) {
         console.log("Created component:", data.createComponentUser);
         refetch();
       } else {
@@ -96,8 +96,7 @@ export default function WorkoutForm({ refetch }: workoutFormProps) {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit(handleSubmitExercise)}>
+    <form onSubmit={handleSubmit(handleSubmitExercise)}>
         <input
           {...register("Repetitions")}
           type="number"
@@ -115,6 +114,5 @@ export default function WorkoutForm({ refetch }: workoutFormProps) {
 
         <input type="submit" />
       </form>
-    </>
   );
 }

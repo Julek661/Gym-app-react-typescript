@@ -22,7 +22,7 @@ interface GetUserWorkoutComponentsInput {
 export default function WorkoutCreator() {
   const loggedIn = useContext<string>(UserContext);
   // sets form open state
-  const [isFormOpen, setIsFormOpen] = React.useState<Boolean>(false);
+  const [isFormOpen, setIsFormOpen] = React.useState<boolean>(false);
   // gets gets user workout data
   const { data: exerciseData = { exerciseComponentsUser: [] }, refetch } =
     useQuery<GetExerciseData, GetUserWorkoutComponentsInput>(

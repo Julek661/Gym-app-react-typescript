@@ -5,9 +5,9 @@ import { UserContext } from "../App";
 
 export default function Login({
   setLoggedIn,
-}: {
+}: Readonly<{
   setLoggedIn: React.Dispatch<SetStateAction<string>>;
-}) {
+}>) {
   const loggedIn = React.useContext<string>(UserContext);
   const [login, setLogin] = React.useState<boolean>(true);
 

@@ -4,6 +4,7 @@ import ExerciseTracker from "./ExerciseTracker";
 import Navbar from "./Navbar";
 import WorkoutCreator from "./Workout Creator/WorkoutCreator";
 import Login from "./Login/Login";
+import CalorieTracker from "./Calorie Tracker/CalorieTracker";
 import "./App.scss";
 
 export const UserContext = React.createContext("");
@@ -27,6 +28,7 @@ const App = () => {
           <Route path="/" element={<Login setLoggedIn={setLoggedIn} />} />
           {loggedIn && <Route path="/exercise" element={<ExerciseTracker />} />}
           {loggedIn && <Route path="/workout" element={<WorkoutCreator />} />}
+          {loggedIn && <Route path="/calorie" element={<CalorieTracker />} />}
         </Routes>
       </UserContext.Provider>
     </div>
