@@ -49,3 +49,11 @@ export const GET_USER_WORKOUT_COMPONENTS = gql`
     }
   }
 `;
+export const GET_GOALS = gql`
+  query {
+    getGoals{
+      goal_id
+      goal
+    }
+  }
+`;
